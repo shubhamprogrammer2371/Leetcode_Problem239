@@ -1,0 +1,48 @@
+The idea is that you will have a queue where the front item will always be the largest item and the queue will always be in decreasing order. 
+Rather than storing the values in the stack, you store the index of the largest value which helps when you want to remove items that are no longer within the window.
+
+Loop through the input array and at each iteration:
+
+-Check the front of the queue and remove any results that are not within the window (this is where using the values' indexes is important).
+-Remove any values from the back of the queue that are less than the current input value.
+-Add the current value to the queue.
+-If you have a full window, add the front element of your queue to the result array and increase resCount.
+-Repeat until you've iterated through the input array.
+
+
+
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* maxSlidingWindow(int* nums, int numsSize, int k, int* returnSize){
+    if (k == 1)
+    {
+        *returnSize = numsSize;
+        return nums;
+    }
+    int *queue = malloc(sizeof(int) * (numsSize));
+    int *ans = malloc(sizeof(int) * (numsSize - k + 1));
+    int rear = -1 , qLen = 0 , front = 0;
+    *returnSize = 0;
+
+    for (int i = 0; i < numsSize; i++)
+    {
+        while (qLen > 0 && i - queue[front] >= k)
+        {
+            front++;
+            qLen--;
+        }
+        while (qLen > 0 && nums[i] > nums[queue[rear]])
+        {
+            rear--;
+            qLen--;
+        }
+        queue[++rear] = i;
+        qLen++;
+        if (i >= k - 1)
+            ans[(*returnSize)++] = nums[queue[front]];
+    }
+    return ans;
+}
